@@ -6,8 +6,8 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   TouchableOpacity,
+  Image
 } from 'react-native';
-import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import SmallIcon from "../../assets/image/SmallIcon";
 import { color } from '../../styles/theme';
 import CaSmell from '../../assets/image/CaSmall';
@@ -15,7 +15,9 @@ import UpSmall from '../../assets/image/UpSmall';
 import LiSmall from '../../assets/image/LiSmall';
 import SoSmall from '../../assets/image/SoSmall';
 
-const MainPage = ({ navigation }) => {
+const MainPage = ({ navigation, route }) => {
+  const image = route?.params?.image;
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <View style={styles.container}>
@@ -31,9 +33,9 @@ const MainPage = ({ navigation }) => {
                     <SoSmall />
                 </TouchableOpacity>
             </View>
-            <View style={styles.blackBox} />
+            <Image source={image ? { uri: image.uri } : null} style={styles.blackBox} />
           </View>
-          <Text style={styles.resultSentence}>hello my name is lee hyun kyu</Text>
+          <Text style={styles.resultSentence}>test</Text>
         </View>
         <View style={styles.iconRow}>
             <View style={styles.row}>
@@ -102,7 +104,6 @@ const styles = StyleSheet.create({
   blackBox: {
     width: 30,
     height: 30,
-    backgroundColor: color.Blue[5],
     borderRadius: 8,
   },
   resultSentence: {
