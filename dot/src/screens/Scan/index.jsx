@@ -1,35 +1,45 @@
-import React, { useEffect } from 'react';
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Keyboard,
-  Dimensions,
-  Alert,
-  Platform,
-} from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
 import { Linking } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { CameraView, useCameraPermissions, Camera } from 'expo-camera';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { LinearGradient } from 'expo-linear-gradient';
-import CustomText from '../../styles/customText';
-import constants from '../../styles/constants';
 import { color } from '../../styles/theme';
+import * as DocumentPicker from 'expo-document-picker';
+
+import CustomText from '../../styles/customText';
 import CameraIcon from '../../assets/image/CameraIcon';
 import UploadIcon from '../../assets/image/UploadIcon';
-
-const { width, height } = Dimensions.get('window');
+import constants from '../../styles/constants';
 
 const ScanPage = ({navigation}) => {
   const [permission, requestPermission] = useCameraPermissions();
   const isFocused = useIsFocused();
+  const cameraRef = useRef(null);
 
   useEffect(() => {
     if (permission && !permission.granted) {
       requestPermission();
     }
   }, [permission]);
+
+  const onPressUpload = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: 'image/*',
+      });
+  
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const image = result.assets[0];
+        console.log("선택된 이미지:", image);
+  
+        navigation.navigate("MainPage", { screen: 'MainPage', image });
+      }
+    } catch (err) {
+      console.error("이미지 선택 오류:", err);
+    }
+  };
 
   const onPressPermission = () => {
     if (Platform.OS === 'ios') {
@@ -48,10 +58,22 @@ const ScanPage = ({navigation}) => {
     }
   };
 
-  const onPressCapture = () => {
-    navigation.navigate("MainPage", { screen: 'MainPage' });
-  }
-
+  const onPressCapture = async () => {
+    if (cameraRef.current) {
+      try {
+        const photo = await cameraRef.current.takePictureAsync({
+          quality: 1,
+          base64: false,
+        });
+  
+        console.log('사진 촬영됨:', photo);
+  
+        navigation.navigate("MainPage", { screen: 'MainPage', image: photo });
+      } catch (error) {
+        console.error("카메라 촬영 오류:", error);
+      }
+    }
+  };
   if (!isFocused) return null;
 
   if (!permission) return <View />;
@@ -72,7 +94,7 @@ const ScanPage = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.cameraView} />
+      <CameraView style={styles.cameraView} ref={cameraRef} />
 
       <View style={styles.bottomSheet}>
         <View style={styles.bottomAlign}>
@@ -88,7 +110,7 @@ const ScanPage = ({navigation}) => {
           <TouchableOpacity style={styles.captureButton} onPress={() => onPressCapture()}>
             <CameraIcon />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.uploadButton}>
+          <TouchableOpacity style={styles.uploadButton} onPress={() => onPressUpload()}>
             <UploadIcon />
           </TouchableOpacity>
         </View>
@@ -103,7 +125,7 @@ const styles = StyleSheet.create({
     backgroundColor: color.White,
   },
   cameraView: {
-    height: height * 0.7,
+    height: constants.height * 0.7,
     width: '100%',
   },
   bottomSheet: {
