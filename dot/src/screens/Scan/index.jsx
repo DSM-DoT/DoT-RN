@@ -21,7 +21,7 @@ import UploadIcon from '../../assets/image/UploadIcon';
 
 const { width, height } = Dimensions.get('window');
 
-const ScanPage = () => {
+const ScanPage = ({navigation}) => {
   const [permission, requestPermission] = useCameraPermissions();
   const isFocused = useIsFocused();
 
@@ -47,6 +47,10 @@ const ScanPage = () => {
       });
     }
   };
+
+  const onPressCapture = () => {
+    navigation.navigate("MainPage", { screen: 'MainPage' });
+  }
 
   if (!isFocused) return null;
 
@@ -81,7 +85,7 @@ const ScanPage = () => {
         </View>
 
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.captureButton}>
+          <TouchableOpacity style={styles.captureButton} onPress={() => onPressCapture()}>
             <CameraIcon />
           </TouchableOpacity>
           <TouchableOpacity style={styles.uploadButton}>
