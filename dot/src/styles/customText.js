@@ -27,14 +27,14 @@ export default class CustomText extends React.Component {
         }
 
         return (
-            <Text style={[styles.text, this.props.style]}>
+            <Text style={[Styles.text, this.props.style]}>
                 {this.props.children}
             </Text>
         );
     }
 }
 
-const styles = StyleSheet.create({
+const Styles = StyleSheet.create({
     text: {
         fontFamily: 'PretendardVariable',
     },
