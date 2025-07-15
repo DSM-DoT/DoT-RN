@@ -13,6 +13,7 @@ import onUploadImg from '../../apis/uploadImg';
 
 const MainPage = ({ navigation, route }) => {
   const image = route?.params?.image;
+  const state = route?.params?.state;
   const [loading, setLoading] = useState(true);
   const [resultSentence, setResultSentence] = useState();
   const formData = new FormData();
@@ -30,10 +31,20 @@ const MainPage = ({ navigation, route }) => {
   }, [image])
 
   const onSendData = async () => {
-    const data = {
-      uri: image.uri,
-      type: image.format || 'image/jpeg',
-      name: image.name || 'photo.jpg',
+    let data = {};
+
+    if(state == 'select') {
+      data = {
+        uri: image.uri,
+        type: image.mimeType || 'image/jpeg',
+        name: image.name || 'photo.jpg',
+      }
+    } else if(state == 'photo') {
+      data = {
+        uri: image.uri,
+        type: image.format=='.jpg' ? 'image/jpg' : 'image/jpeg',
+        name: 'photo.jpg'
+      }
     }
 
     if(data) {
