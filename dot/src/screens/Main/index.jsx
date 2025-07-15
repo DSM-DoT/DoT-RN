@@ -9,15 +9,44 @@ import UpSmall from '../../assets/image/UpSmall';
 import LiSmall from '../../assets/image/LiSmall';
 import SoSmall from '../../assets/image/SoSmall';
 
+import onUploadImg from '../../apis/uploadImg';
+
 const MainPage = ({ navigation, route }) => {
   const image = route?.params?.image;
   const [loading, setLoading] = useState(true);
   const [resultSentence, setResultSentence] = useState();
+  const formData = new FormData();
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if(image != null) {
+      console.log(image);
+      onSendData();
+    }
+  }, [image])
+
+  const onSendData = async () => {
+    const data = {
+      uri: image.uri,
+      type: image.format || 'image/jpeg',
+      name: image.name || 'photo.jpg',
+    }
+
+    if(data) {
+      formData.append("image", data);
+    } else {
+      formData.append("image", "");
+    }
+
+    const res = await onUploadImg(formData);
+    if(res) {
+      setResultSentence(res);
+    }
+  }
 
   if (loading) {
     return (
