@@ -34,7 +34,7 @@ const ScanPage = ({navigation}) => {
         const image = result.assets[0];
         console.log("선택된 이미지:", image);
   
-        navigation.navigate("MainPage", { screen: 'MainPage', image, state: 'select' });
+        navigation.navigate("MainPage", { screen: 'MainPage', image });
       }
     } catch (err) {
       console.error("이미지 선택 오류:", err);
@@ -68,7 +68,7 @@ const ScanPage = ({navigation}) => {
   
         console.log('사진 촬영됨:', photo);
   
-        navigation.navigate("MainPage", { screen: 'MainPage', image: photo, state: 'photo' });
+        navigation.navigate("MainPage", { screen: 'MainPage', image: photo });
       } catch (error) {
         console.error("카메라 촬영 오류:", error);
       }
