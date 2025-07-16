@@ -13,6 +13,9 @@ import UpSmall from '../../assets/image/UpSmall';
 import LiSmall from '../../assets/image/LiSmall';
 import SoSmall from '../../assets/image/SoSmall';
 
+import onWeb from '../../apis/WebSocket';
+import BrailleBinary from '../../utils/BrailleBinary';
+
 const MainPage = ({ navigation, route }) => {
   const image = route?.params?.image;
   const [loading, setLoading] = useState(true);
@@ -68,12 +71,14 @@ const MainPage = ({ navigation, route }) => {
       });
 
       const result = await response.json();
-      console.log(result);
 
       if (result.responses && result.responses[0].fullTextAnnotation) {
         const recognizedText = result.responses[0].fullTextAnnotation.text;
         setResultSentence(recognizedText);
         console.log('인식된 텍스트:', recognizedText);
+        const data = recognizedText.split("").map(ch => BrailleBinary[ch]).join("");
+        console.log(data);
+        sendData(data, recognizedText);
       } else {
         setResultSentence('텍스트를 감지하지 못했습니다');
         console.log('이미지에서 텍스트를 감지하지 못했습니다');
@@ -85,6 +90,10 @@ const MainPage = ({ navigation, route }) => {
       setLoading(false);
     }
   };
+
+  const sendData = async (data, str) => {
+    const res = await onWeb(data, str);
+  }
 
   if (loading) {
     return (
